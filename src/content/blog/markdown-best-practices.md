@@ -71,13 +71,29 @@ Use descriptive link text and always include alt text for images:
 
 ```markdown
 [Descriptive link text](https://monotype.com)
-
-![Alt text describing the image](./image.png)
 ```
+
+### Links
 
 [Descriptive link text](https://monotype.com)
 
-![Alt text describing the image](./images/blog/blog2.avif)
+### Images
+
+For images stored in the `public/images/blog/` directory, use absolute paths starting with `/images/blog/`:
+
+```markdown
+![Alt text describing the image](/images/blog/blog2.avif)
+```
+
+![Markdown syntax examples and best practices](/images/blog/blog2.avif)
+
+**Important Notes:**
+- Use absolute paths (starting with `/`) for images in the `public/` folder
+- The path `/images/blog/filename.avif` maps to `public/images/blog/filename.avif`
+- Always include descriptive alt text for accessibility
+- Supported formats: `.avif`, `.jpg`, `.png`, `.webp`, `.svg`
+
+
 
 ## Frontmatter
 
