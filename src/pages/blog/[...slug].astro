@@ -1,0 +1,203 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: import('astro:content').CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const baseUrl = import.meta.env.BASE_URL;
+// Ensure base URL ends with / for proper path joining
+const getUrl = (path: string) => {
+  const cleanBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  return `${cleanBase}${cleanPath}`;
+};
+// Helper to get image URL with base path
+const getImageUrl = (imagePath: string) => {
+  if (!imagePath) return '';
+  // If path already starts with base, return as is
+  if (imagePath.startsWith(baseUrl)) return imagePath;
+  // If path starts with /, prepend base (removing leading /)
+  if (imagePath.startsWith('/')) {
+    const cleanBase = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+    return `${cleanBase}${imagePath}`;
+  }
+  // Otherwise, treat as relative path
+  return getUrl(imagePath);
+};
+---
+
+<BaseLayout title={post.data.title} description={post.data.description}>
+  <article class="container">
+    <header class="post-header">
+      {post.data.image && (
+        <div class="post-image">
+          <img 
+            src={getImageUrl(post.data.image)} 
+            alt={post.data.imageAlt || post.data.title}
+            loading="eager"
+          />
+        </div>
+      )}
+      <h1>{post.data.title}</h1>
+      <p class="post-description">{post.data.description}</p>
+      <div class="post-meta">
+        <div class="meta-item">
+          <strong>Published:</strong>{' '}
+          <time datetime={post.data.pubDate.toISOString()}>
+            {post.data.pubDate.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </time>
+        </div>
+        <div class="meta-item">
+          <strong>Author:</strong> {post.data.author}
+        </div>
+        {post.data.tags.length > 0 && (
+          <div class="meta-item">
+            <strong>Tags:</strong>
+            <div class="tags">
+              {post.data.tags.map((tag) => (
+                <span class="tag">{tag}</span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </header>
+
+    <div class="post-content">
+      <Content />
+    </div>
+
+    <footer class="post-footer">
+      <a href={getUrl('blog')} class="back-link">← Back to Blog</a>
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  article {
+    max-width: var(--blog-content-width);
+    margin: 0 auto;
+  }
+
+  .post-header {
+    margin-bottom: var(--md-spacing-unit--4xl);
+    padding-bottom: var(--md-spacing-unit--xl);
+    border-bottom: 1px solid var(--blog-border);
+  }
+
+  .post-image {
+    margin-bottom: var(--md-spacing-unit--xl);
+    border-radius: var(--md-border-radius--lg);
+    overflow: hidden;
+  }
+
+  .post-image img {
+    width: 100%;
+    height: 500px;
+    display: block;
+    object-fit: cover;
+  }
+
+  .post-header h1 {
+    margin-bottom: var(--md-spacing-unit--md);
+  }
+
+  .post-description {
+    font-size: var(--md-font-size--lg);
+    color: var(--blog-text-muted);
+    margin-bottom: var(--md-spacing-unit--lg);
+  }
+
+  .post-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--md-spacing-unit--sm);
+    font-size: var(--md-font-size--body2);
+    color: var(--blog-text-muted);
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--md-spacing-unit--xs);
+  }
+
+  .tags {
+    display: flex;
+    gap: var(--md-spacing-unit--xs);
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    background-color: var(--md-color--blue-duck--50);
+    padding: 2px var(--md-spacing-unit--xs);
+    border-radius: var(--md-border-radius--xl);
+    font-size: var(--md-font-size--micro1);
+  }
+
+  .post-content {
+    line-height: var(--md-line-height--body1);
+  }
+
+  .post-content :global(h2) {
+    margin-top: var(--md-spacing-unit--4xl);
+    margin-bottom: var(--md-spacing-unit--lg);
+  }
+
+  .post-content :global(h3) {
+    margin-top: var(--md-spacing-unit--3xl);
+    margin-bottom: var(--md-spacing-unit--md);
+  }
+
+  .post-content :global(p) {
+    margin-top: var(--md-spacing-unit--md);
+    margin-bottom: var(--md-spacing-unit--md);
+  }
+
+  .post-content :global(ul),
+  .post-content :global(ol) {
+    margin-bottom: var(--md-spacing-unit--md);
+  }
+
+  .post-content :global(blockquote) {
+    border-left: 4px solid var(--blog-primary);
+    padding-left: var(--md-spacing-unit--lg);
+    margin: var(--md-spacing-unit--lg) 0;
+    font-style: italic;
+    color: var(--blog-text-muted);
+  }
+
+  .post-footer {
+    margin-top: var(--md-spacing-unit--6xl);
+    padding-top: var(--md-spacing-unit--xl);
+    border-top: 1px solid var(--blog-border);
+  }
+
+  .back-link {
+    color: var(--blog-primary);
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .post-meta {
+      font-size: var(--md-font-size--micro1);
+    }
+  }
+</style>

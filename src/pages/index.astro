@@ -1,0 +1,247 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const posts = allPosts.sort((a, b) => 
+  b.data.pubDate.getTime() - a.data.pubDate.getTime()
+).slice(0, 5); // Show latest 5 posts
+
+const baseUrl = import.meta.env.BASE_URL;
+// Ensure base URL ends with / for proper path joining
+const getUrl = (path: string) => {
+  const cleanBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  return `${cleanBase}${cleanPath}`;
+};
+// Helper to get image URL with base path
+const getImageUrl = (imagePath: string) => {
+  if (!imagePath) return '';
+  // If path already starts with base, return as is
+  if (imagePath.startsWith(baseUrl)) return imagePath;
+  // If path starts with /, prepend base (removing leading /)
+  if (imagePath.startsWith('/')) {
+    const cleanBase = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+    return `${cleanBase}${imagePath}`;
+  }
+  // Otherwise, treat as relative path
+  return getUrl(imagePath);
+};
+---
+
+<BaseLayout title="Home">
+  <div class="container">
+    <section class="hero">
+      <h1>Welcome to Tech Corner</h1>
+      <p class="hero-description">
+        A technology blog, featuring the latest insights,
+        tutorials, and thoughts on AI, web development and technology.
+      </p>
+    </section>
+
+    <section class="latest-posts">
+      <h2>Latest Posts</h2>
+      {posts.length > 0 ? (
+        <div class="posts-grid">
+          {posts.map((post) => (
+            <article class="post-card">
+              <a href={getUrl(`blog/${post.slug}`)}>
+                {post.data.image && (
+                  <div class="post-card-image">
+                    <img 
+                      src={getImageUrl(post.data.image)} 
+                      alt={post.data.imageAlt || post.data.title}
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+                <h5>{post.data.title}</h5>
+                <p class="post-description">{post.data.description}</p>
+                <div class="post-meta">
+                  <time datetime={post.data.pubDate.toISOString()}>
+                    {post.data.pubDate.toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </time>
+                  {post.data.tags.length > 0 && (
+                    <div class="post-tags">
+                      {post.data.tags.map((tag) => (
+                        <span class="tag">{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p>No posts yet. Check back soon!</p>
+      )}
+      {allPosts.length > 5 && (
+        <div class="view-all">
+          <a href={getUrl('blog')} class="button">View All Posts</a>
+        </div>
+      )}
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .hero {
+    text-align: center;
+    margin-bottom: var(--md-spacing-unit--6xl);
+    padding: var(--md-spacing-unit--5xl) 0;
+  }
+
+  .hero h1 {
+    font-size: var(--md-font-size--hero3);
+    line-height: var(--md-line-height--hero3);
+    margin-bottom: var(--md-spacing-unit--lg);
+    background: linear-gradient(135deg, var(--blog-primary), var(--md-color--magneton--500));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-description {
+    font-size: var(--md-font-size--lg);
+    color: var(--blog-text-muted);
+    max-width: var(--blog-content-width);
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  .latest-posts {
+    margin-top: var(--md-spacing-unit--6xl);
+  }
+
+  .latest-posts h2 {
+    margin-bottom: var(--md-spacing-unit--xl);
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--md-spacing-unit--xl);
+    margin-bottom: var(--md-spacing-unit--xl);
+  }
+
+  .post-card {
+    background-color: var(--blog-bg);
+    border: 1px solid var(--blog-border);
+    border-radius: var(--md-border-radius--lg);
+    padding: 0;
+    overflow: hidden;
+    transition: transform var(--md-transition--fast), box-shadow var(--md-transition--fast);
+  }
+
+  .post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .post-card a {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+  }
+
+  .post-card-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background-color: var(--md-color--spirits--100);
+  }
+
+  .post-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--md-transition--reg);
+    border-radius: 0;
+  }
+
+  .post-card:hover .post-card-image img {
+    transform: scale(1.05);
+  }
+
+  .post-card h5 {
+    margin: var(--md-spacing-unit--md) var(--md-spacing-unit--lg) var(--md-spacing-unit--sm);
+    color: var(--blog-text);
+  }
+
+  .post-card .post-description {
+    margin: 0 var(--md-spacing-unit--lg) var(--md-spacing-unit--md);
+  }
+
+  .post-card .post-meta {
+    margin: 0 var(--md-spacing-unit--lg) var(--md-spacing-unit--xl);
+  }
+
+  .post-card:hover h5 {
+    color: var(--blog-primary);
+  }
+
+  .post-description {
+    color: var(--blog-text-muted);
+    margin-bottom: var(--md-spacing-unit--md);
+    font-size: var(--md-font-size--body2);
+  }
+
+  .post-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--md-spacing-unit--sm);
+    font-size: var(--md-font-size--micro1);
+    color: var(--blog-text-muted);
+  }
+
+  .post-tags {
+    display: flex;
+    gap: var(--md-spacing-unit--xs);
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    background-color: var(--md-color--blue-duck--50);
+    padding: 2px var(--md-spacing-unit--xs);
+    border-radius: var(--md-border-radius--xl);
+    font-size: var(--md-font-size--micro1);
+  }
+
+  .view-all {
+    text-align: center;
+    margin-top: var(--md-spacing-unit--xl);
+  }
+
+  .button {
+    display: inline-block;
+    padding: var(--md-spacing-unit--sm) var(--md-spacing-unit--lg);
+    background-color: var(--blog-primary);
+    color: white;
+    border-radius: var(--md-border-radius--md);
+    font-weight: 500;
+    transition: background-color var(--md-transition--fast);
+  }
+
+  .button:hover {
+    background-color: var(--blog-primary-hover);
+    color: white;
+  }
+
+  @media (max-width: 768px) {
+    .posts-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hero h1 {
+      font-size: var(--md-font-size--heading1);
+      line-height: var(--md-line-height--heading1);
+    }
+  }
+</style>

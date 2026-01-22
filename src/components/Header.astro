@@ -1,0 +1,96 @@
+---
+import { NAVIGATION } from '../config';
+
+const baseUrl = import.meta.env.BASE_URL;
+// Helper to create URLs with base path
+const getUrl = (path: string) => {
+  // BASE_URL might be '/tech-blog' or '/tech-blog/'
+  // Ensure we have proper path separation
+  const cleanBase = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  // For root path, return base without trailing slash
+  if (cleanPath === '/') {
+    return cleanBase || '/';
+  }
+  return `${cleanBase}${cleanPath}`;
+};
+---
+
+<header>
+  <nav class="container">
+    <div class="nav-wrapper">
+      <a href={getUrl('/')} class="logo">
+        <h1>Tech Corner</h1>
+      </a>
+      <ul class="nav-links">
+        {NAVIGATION.map((item) => (
+          <li>
+            <a href={getUrl(item.href)}>{item.label}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </nav>
+</header>
+
+<style>
+  header {
+    background-color: var(--blog-bg);
+    border-bottom: 1px solid var(--blog-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    header {
+      background-color: rgba(14, 16, 19, 0.9);
+    }
+  }
+
+  .nav-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    text-decoration: none;
+    color: var(--blog-text);
+  }
+
+  .logo h1 {
+    font-size: var(--md-font-size--heading5);
+    margin: 0;
+    color: var(--blog-primary);
+  }
+
+  .nav-links {
+    display: flex;
+    list-style: none;
+    gap: var(--md-spacing-unit--lg);
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-links a {
+    color: var(--blog-text);
+    font-weight: 500;
+    padding: var(--md-spacing-unit--xs) var(--md-spacing-unit--md);
+    border-radius: var(--md-border-radius--sm);
+    transition: background-color var(--md-transition--fast);
+  }
+
+  .nav-links a:hover {
+    background-color: var(--md-color--blue-duck--50);
+    color: var(--blog-primary);
+  }
+
+  @media (max-width: 768px) {
+    .nav-links {
+      gap: var(--md-spacing-unit--md);
+    }
+  }
+</style>

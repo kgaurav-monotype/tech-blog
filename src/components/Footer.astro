@@ -1,0 +1,36 @@
+---
+import { SITE } from '../config';
+const currentYear = new Date().getFullYear();
+---
+
+<footer>
+  <div class="container">
+    <p>
+      © {currentYear} {SITE.title}. Designed with{' '}
+      <a href="https://monotype.com" target="_blank" rel="noopener noreferrer">
+        Monotype
+      </a>
+      .
+    </p>
+  </div>
+</footer>
+
+<style>
+  footer {
+    background-color: var(--blog-bg);
+    border-top: 1px solid var(--blog-border);
+    padding: var(--md-spacing-unit--xl) 0;
+    margin-top: var(--md-spacing-unit--6xl);
+  }
+
+  footer p {
+    text-align: center;
+    color: var(--blog-text-muted);
+    margin: 0;
+    font-size: var(--md-font-size--body2);
+  }
+
+  footer a {
+    color: var(--blog-primary);
+  }
+</style>

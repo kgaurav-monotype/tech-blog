@@ -1,0 +1,47 @@
+---
+import '@antiqua-dls/web-components/dist/collection/styles/index.css';
+import '../styles/global.css';
+import { SITE, NAVIGATION } from '../config';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = SITE.title, description = SITE.description } = Astro.props;
+const fullTitle = title === SITE.title ? title : `${title} | ${SITE.title}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="preload"
+      as="style"
+      href="https://cdn.fonts.net/kit/103f1d1f-1377-41d0-b4f9-3599a1853ee3/103f1d1f-1377-41d0-b4f9-3599a1853ee3_enhanced.css"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <meta name="generator" content={Astro.generator} />
+    <title>{fullTitle}</title>
+  </head>
+  <body>
+    <Header />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  main {
+    min-height: calc(100vh - 200px);
+    padding: var(--md-spacing-unit--4xl) 0;
+  }
+</style>
