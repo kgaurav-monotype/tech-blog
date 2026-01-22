@@ -27,6 +27,10 @@ Use header levels logically:
 ### Subsection (H3)
 ```
 
+# This is the H1 - Main Title
+## This is the H2 - Section
+### This is the H3 - Subsection
+
 ### Lists
 
 Prefer ordered lists for sequential steps and unordered lists for items:
@@ -40,6 +44,14 @@ Prefer ordered lists for sequential steps and unordered lists for items:
 - Item two
 - Item three
 ```
+
+1. First step
+2. Second step
+3. Third step
+
+- Item one
+- Item two
+- Item three
 
 ## Code Blocks
 
@@ -58,10 +70,14 @@ function greet(name) {
 Use descriptive link text and always include alt text for images:
 
 ```markdown
-[Descriptive link text](https://example.com)
+[Descriptive link text](https://monotype.com)
 
 ![Alt text describing the image](./image.png)
 ```
+
+[Descriptive link text](https://monotype.com)
+
+![Alt text describing the image](/images/blog/blog2.avif)
 
 ## Frontmatter
 
