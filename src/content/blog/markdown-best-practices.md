@@ -77,7 +77,7 @@ Use descriptive link text and always include alt text for images:
 
 [Descriptive link text](https://monotype.com)
 
-![Alt text describing the image](/images/blog/blog2.avif)
+![Alt text describing the image](./images/blog/blog2.avif)
 
 ## Frontmatter
 
