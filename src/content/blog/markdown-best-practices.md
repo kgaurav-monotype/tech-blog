@@ -82,10 +82,10 @@ Use descriptive link text and always include alt text for images:
 For images stored in the `public/images/blog/` directory, use absolute paths starting with `/images/blog/`:
 
 ```markdown
-![Alt text describing the image](/images/blog/blog2.avif)
+![Alt text describing the image](/images/blog/blog1.avif)
 ```
 
-![Markdown syntax examples and best practices](/images/blog/blog2.avif)
+![Markdown syntax examples and best practices](/images/blog/blog1.avif)
 
 **Important Notes:**
 - Use absolute paths (starting with `/`) for images in the `public/` folder

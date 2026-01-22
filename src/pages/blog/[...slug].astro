@@ -84,6 +84,29 @@ const getImageUrl = (imagePath: string) => {
       <Content />
     </div>
 
+    <script is:inline>
+      // Fix image URLs in markdown content to include base path
+      (function() {
+        function fixImageUrls() {
+          const basePath = '/tech-blog';
+          const images = document.querySelectorAll('.post-content img');
+          images.forEach((img) => {
+            const src = img.getAttribute('src');
+            if (src && src.startsWith('/images/') && !src.startsWith(basePath)) {
+              img.setAttribute('src', basePath + src);
+            }
+          });
+        }
+        
+        // Run immediately if DOM is ready, otherwise wait for it
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', fixImageUrls);
+        } else {
+          fixImageUrls();
+        }
+      })();
+    </script>
+
     <footer class="post-footer">
       <a href={getUrl('blog')} class="back-link">← Back to Blog</a>
     </footer>
